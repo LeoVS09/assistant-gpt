@@ -24,3 +24,8 @@ Here are several cases for your reference: (
 
 Please output only valid JSON on user prompt.
 `
+
+const now = new Date().toDateString()
+console.log('current date', now)
+
+export const SystemPrompt = generateSystemPrompt(now)

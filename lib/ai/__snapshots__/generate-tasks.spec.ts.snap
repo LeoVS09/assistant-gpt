@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`generateTasks should correctly answer on Need work on taxes this week 1`] = `
+exports[`generateTasks should correctly answer on 'Need work on taxes this week' 1`] = `
 [
   {
     "system": "
@@ -40,7 +40,7 @@ Please output only valid JSON on user prompt.
       "args": {
         "text": "Need work on taxes this week",
         "entities": ["taxes"],
-        "tags": ["work", "high priority"],
+        "tags": ["work list", "high priority"],
         "status": "to-do",
         "end-date": "10 April 2023"
       }
@@ -52,7 +52,7 @@ Please output only valid JSON on user prompt.
 ]
 `;
 
-exports[`generateTasks should correctly answer on What to read this month? 1`] = `
+exports[`generateTasks should correctly answer on 'What to read this month?' 1`] = `
 [
   {
     "system": "
