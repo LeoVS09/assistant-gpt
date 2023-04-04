@@ -26,28 +26,14 @@ Here are several cases for your reference: (
 - Result: { "tasks": [{ “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “milk” }, “update”: {”$set”: { “status”: “done” } } } }, { “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “apple” }, “update”: {”$set”: { “status”: “done” } } } }], "response": "Milk and apple marked as completed in shoping list" }
 )
 
-Ouput response in JSON notation.
+Ouput response allways in valid JSON notation.
 ",
   },
   {
     "user": "Need work on taxes this week",
   },
   {
-    "assistant": "{
-  "tasks": [
-    {
-      "task": "save",
-      "args": {
-        "text": "Need work on taxes this week",
-        "entities": ["taxes"],
-        "tags": ["work list", "high priority"],
-        "status": "to-do",
-        "end-date": "10 April 2023"
-      }
-    }
-  ],
-  "response": "Taxes added to work list"
-}",
+    "assistant": "{ "tasks": [{ "task": "save", "args": { "text": "Need work on taxes this week", "entities": ["taxes"], "tags": ["work", "high priority"], "status": "to-do", "end-date": "10 April 2023" }}], "response": "Taxes added to work list" }",
   },
 ]
 `;
@@ -78,14 +64,14 @@ Here are several cases for your reference: (
 - Result: { "tasks": [{ “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “milk” }, “update”: {”$set”: { “status”: “done” } } } }, { “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “apple” }, “update”: {”$set”: { “status”: “done” } } } }], "response": "Milk and apple marked as completed in shoping list" }
 )
 
-Ouput response in JSON notation.
+Ouput response allways in valid JSON notation.
 ",
   },
   {
     "user": "What to read this month?",
   },
   {
-    "assistant": "{ "tasks": [{ "task": "query", "args": { tags: 'reading list', status: ‘to-do’, “end-date”: {$lte: “30 April 2023”} } }], "response": "Books to read this month" }",
+    "assistant": "Result: { "tasks": [{ "task": "query", "args": { tags: 'reading list', status: ‘to-do’, “end-date”: {$lte: “30 April 2023”} } }], "response": "Books to read this month" }",
   },
 ]
 `;
@@ -116,14 +102,14 @@ Here are several cases for your reference: (
 - Result: { "tasks": [{ “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “milk” }, “update”: {”$set”: { “status”: “done” } } } }, { “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “apple” }, “update”: {”$set”: { “status”: “done” } } } }], "response": "Milk and apple marked as completed in shoping list" }
 )
 
-Please output only valid JSON on user prompt.
+Ouput response allways in valid JSON notation.
 ",
   },
   {
     "user": "What to read this month?",
   },
   {
-    "assistant": "{ "tasks": [{ "task": "query", "args": { tags: 'reading list', status: ‘to-do’, “end-date”: {$lte: “30 April 2023”} } }], "response": "Books to read this month" }",
+    "assistant": "{"tasks": [{"task": "save", "args": { "text": "Need buy milk today", "entities": ["milk", "today"], "tags": ["shopping list", "minor priority"], "status": "to-do", "end-date": "4 April 2023" }}], "response": "Milk added to shopping list"}",
   },
 ]
 `;

@@ -30,11 +30,16 @@ console.log('current date', now)
 
 export const SystemPrompt = generateSystemPrompt(now)
 
-export const generatePromptToFixJsonError = (error?: any) => `
+// GPT-3.5 allways output appologies for mistakes, need use  to split it from real response
+export const generatePromptToFixJsonError = (separator: string, error?: any) => `
 Previusly you outputed invalid JSON. Please fix it. 
 Here is the error message: ${errorToString(error)}
 
-Output response in JSON notation. Omit any else text, apart from JSON.
+Output response in valid JSON notation. Write final result after words ${separator}.
+
+There example:
+I apologize for the mistake. Here is the corrected JSON response:
+${separator} {"tasks": [{"task": "save", "args": { "text": "Need buy milk today", "entities": ["milk", “today”], "tags": ["shopping list", "minor priority"], status: ‘to-do’, “end-date”: “4 April 2023” }}], "response": "Milk added to shoping list" }
 `
 
 const errorToString = (error?: any) => {

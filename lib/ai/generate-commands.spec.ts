@@ -1,6 +1,6 @@
 import {jest, describe, it, expect} from '@jest/globals';
 
-import { generateCommands, generateCommandsWithRetry } from "./generate-commands";
+import { extractCommandsAfterRetry, generateCommands, generateCommandsWithRetry } from "./generate-commands";
 import { validJsonObject } from "./json-validator";
 import { generateSystemPrompt } from "./prompt";
 import { genIsValid } from "./retry";
@@ -13,6 +13,27 @@ console.log('assume for tests current date is', now)
 const SECONDS = 1000;
 jest.setTimeout(70 * SECONDS)
 
+
+describe('extractCommandsAfterRetry', () => {
+  it('extract real result from text after given separator', () => {
+    const separator = ':-%'
+    const textWithSeparator = 'Result:-% Success '
+
+    expect(extractCommandsAfterRetry(separator, textWithSeparator)).toBe('Success')
+    
+    
+})
+
+it('throw error if cannot extract', () => {
+  const separator = ':-%'
+  const textWithoutSeparator = 'Failed to retrieve result'
+
+  
+  expect(() => {extractCommandsAfterRetry(separator, textWithoutSeparator)})
+  .toThrow(`Cannot find separator '${separator}' in text '${textWithoutSeparator}'`)
+})
+
+})
 
 describe('generateCommands', () => {
 

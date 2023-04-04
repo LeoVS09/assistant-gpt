@@ -9,30 +9,36 @@ export interface GenerateCommandsOptions extends SendMessageOptions {
     prompt: String
 }
 
+export interface Commands {
+    response: ChatMessage
+    text: string
+}
 
-export const generateCommandsWithRetry = async ({prompt, ...rest}: GenerateCommandsOptions) => retry<ChatMessage>(
-    async (res, error) => {
-        if(!res) {
+const appologySeparator = '%RESULT%'
+
+export const generateCommandsWithRetry = async ({prompt, ...rest}: GenerateCommandsOptions) => retry<Commands>(
+    async (commands, error) => {
+        if(!commands) {
             // No errors, initial call
-            return await generateCommands({
-                ...rest,
-                prompt
-            })
+            const response = await generateCommands({prompt, ...rest})
+            return { response, text: response.text }
         }
 
         // Ouput probably was not valid json
-        const promptToFixError = generatePromptToFixJsonError(error)
+        const promptToFixError = generatePromptToFixJsonError(appologySeparator, error)
 
-        return await generateCommands({
+        const retryRes = await generateCommands({
             ...rest,
             prompt: promptToFixError,
-            parentMessageId: res.id
+            parentMessageId: commands.response.id
         })
+
+        return { response: retryRes, text: extractCommandsAfterRetry(appologySeparator, retryRes.text) }
     },
     (res) => validJsonObject(res.text)
 )
 
-export async function generateCommands({prompt, ...rest}: GenerateCommandsOptions) {
+export async function generateCommands({prompt, ...rest}: GenerateCommandsOptions): Promise<ChatMessage> {
     const res = await api.sendMessage(prompt, {
         ...rest,
         // onProgress: (partialResponse) => console.debug(partialResponse.text)
@@ -43,6 +49,15 @@ export async function generateCommands({prompt, ...rest}: GenerateCommandsOption
     return res
 }
 
+/** Extract real result from text after given separator */
+export const extractCommandsAfterRetry = (separator: string, text: string) => {
+    const index = text.lastIndexOf(separator)
+    if(index === -1) {
+        throw new Error(`Cannot find separator '${separator}' in text '${text}'`)
+    }
 
+    return text.slice(index + separator.length).trim()
+
+}
 
 
