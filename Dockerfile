@@ -1,11 +1,11 @@
 # Define two step build to cache dependencies 
 # in base step will install all node modules and base tools
-FROM node:12.13.1-stretch as base
+FROM node:18-alpine as base
 
-RUN apt update && apt upgrade -y && \
-   apt install -y bash bash-completion make curl wget
+RUN apk update && apk upgrade && \
+   apk add bash bash-completion make curl wget
 
-RUN npm i -g npx serverless
+RUN npm i -g serverless
 
 WORKDIR /app 
 

@@ -1,5 +1,8 @@
-# TasksMaster Bot
-TasksMaster bot - simple serverless bot which you can use as template for you own bot
+# AssistantGPT
+
+AI personal assistant with capabilities to save and manage information. Based on ChatGPT. Primary focus on notes and task management.
+
+You can start use it by link http://t.me/AassistGptBot or find on Telegram @AassistGptBot.
 
 He contains base setup of enviroment and tools to start develop telegram bot on lambda functions with DynamoDB from zero (minimal) configuration
 
