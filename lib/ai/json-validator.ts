@@ -1,16 +1,15 @@
+
 /**
  * Checks the argument for compliance with valid json
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/try...catch#The_exception_identifier
  * @param {*} text
  * @returns {boolean}
  */
-export function isValidJson(text: string) {
+export function validateJson(text: string) {
     try {
         JSON.parse(text);
-        return true;
     } catch (error) {
-        console.error('Error during validation on json', error);
-        return false;
+        throw error;
     }
 }
 
@@ -20,17 +19,17 @@ export function isValidJson(text: string) {
  * @param {*} text
  * @returns {boolean}
  */
-export function isValidJsonObject(text: string) {
+export function validJsonObject(text: string) {
     if (typeof text !== 'string') {
-        return false;
+        throw new Error('Text is not a string')
     }
 
     const startsWithOpeningCurlyBrace = text.indexOf('{') === 0;
     const endsWithClosingCurlyBrace = text.lastIndexOf('}') === (text.length - 1);
 
     if (startsWithOpeningCurlyBrace && endsWithClosingCurlyBrace) {
-        return isValidJson(text);
+        return validateJson(text);
     }
 
-    return false;
+    throw new Error('Text is not a valid json object, it must start with { and end with }');
 }

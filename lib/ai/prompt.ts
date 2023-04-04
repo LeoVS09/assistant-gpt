@@ -22,10 +22,25 @@ Here are several cases for your reference: (
 - Result: { "tasks": [{ “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “milk” }, “update”: {”$set”: { “status”: “done” } } } }, { “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “apple” }, “update”: {”$set”: { “status”: “done” } } } }], "response": "Milk and apple marked as completed in shoping list" }
 )
 
-Please output only valid JSON on user prompt.
+Ouput response allways in valid JSON notation.
 `
 
 const now = new Date().toDateString()
 console.log('current date', now)
 
 export const SystemPrompt = generateSystemPrompt(now)
+
+export const generatePromptToFixJsonError = (error?: any) => `
+Previusly you outputed invalid JSON. Please fix it. 
+Here is the error message: ${errorToString(error)}
+
+Output response in JSON notation. Omit any else text, apart from JSON.
+`
+
+const errorToString = (error?: any) => {
+    if (error) {
+        return error.toString() || error.message || JSON.stringify(error)
+    }
+
+    return 'Unknown error'
+}

@@ -26,7 +26,7 @@ Here are several cases for your reference: (
 - Result: { "tasks": [{ “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “milk” }, “update”: {”$set”: { “status”: “done” } } } }, { “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “apple” }, “update”: {”$set”: { “status”: “done” } } } }], "response": "Milk and apple marked as completed in shoping list" }
 )
 
-Please output only valid JSON on user prompt.
+Ouput response in JSON notation.
 ",
   },
   {
@@ -78,7 +78,7 @@ Here are several cases for your reference: (
 - Result: { "tasks": [{ “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “milk” }, “update”: {”$set”: { “status”: “done” } } } }, { “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “apple” }, “update”: {”$set”: { “status”: “done” } } } }], "response": "Milk and apple marked as completed in shoping list" }
 )
 
-Please output only valid JSON on user prompt.
+Ouput response in JSON notation.
 ",
   },
   {
@@ -90,7 +90,7 @@ Please output only valid JSON on user prompt.
 ]
 `;
 
-exports[`generateCommands should correctly answer on 'What to read this month?' 2`] = `
+exports[`generateCommandsWithRetry should answer valid json on 'What to read this month?' 1`] = `
 [
   {
     "system": "
