@@ -34,6 +34,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "lib": ["DOM", "esnext"],
-    "importHelpers": false
+    "importHelpers": false,
   }
 }
