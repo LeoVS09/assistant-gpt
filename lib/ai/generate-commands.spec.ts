@@ -1,8 +1,9 @@
-import { generateTasks } from "./generate-commands";
+import { generateCommands } from "./generate-commands";
+import { isValidJsonObject } from "./json-validator";
 import { generateSystemPrompt } from "./prompt";
 
 
-describe('generateTasks', () => {
+describe('generateCommands', () => {
 
   const now = 'Tue Apr 04 2023'
   console.log('assume for tests current date is', now)
@@ -17,7 +18,7 @@ describe('generateTasks', () => {
   for (const prompt of prompts) {
 
     it(`should correctly answer on '${prompt}'`, async () => {
-      const res = await generateTasks(system, prompt)
+      const res = await generateCommands(system, prompt)
       
       console.log(`- User: ${prompt}\n-Tasks: ${res.text}\n`)
 
@@ -26,6 +27,7 @@ describe('generateTasks', () => {
         {'user': prompt},
         {'assistant': res.text}
       ]).toMatchSnapshot();
+      expect(isValidJsonObject(res.text)).toBeTruthy();
     });
     
   }
