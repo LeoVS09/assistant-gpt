@@ -28,7 +28,7 @@ export const genIsValid = <Response>(validate: (arg: Response) => void) => (resp
         
         return {isValid: true}
     } catch (error) {
-        console.error('Error during execution', error, 'for response', response)
+        console.warn('Error during execution', error, 'for response', response)
         return {isValid: false, error}
     }
 }

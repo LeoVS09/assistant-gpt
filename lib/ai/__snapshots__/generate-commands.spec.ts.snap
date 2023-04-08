@@ -4,36 +4,69 @@ exports[`generateCommands should correctly answer on 'Need work on taxes this we
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note manger. You must parse user prompt and output several tasks. Tasks must be written in JSON format { "tasks": [{"task": "task-id", "args": {} }], "response": "Optional response to the user" }.
-A special task-id refers to id of task from following list: [{ "id": "save", "description": "Save the args as document in MongoDB"}, {"id": "query", "description": "Execute MongoDB find query with given arguments in args"}, {”id”: “update”, “description”: “Update existing document in MongoDB using updateOne operation” ]
+You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You can use any of the following commands: [
+  {
+    "command": "save",
+    "description": "Save the args as document in MongoDB"
+  },
+  {
+    "command": "query",
+    "description": "Execute MongoDB find query with given arguments in args"
+  },
+  {
+    "command": "update",
+    "description": "Update existing document in MongoDB using updateOne operation"
+  }
+].
+You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
+Output format: {
+  "commands": [
+    {
+      "id": "command-id",
+      "args": {}
+    }
+  ],
+  "response": "Optional response to the user"
+}
+A special task-id refers to id of task from previus list.
 
-Assume the current date is Tue Apr 04 2023.
+In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
 
-Here are several cases for your reference: (
-- User prompt: "Need buy milk today". 
-- Result: { "tasks": [{ "task": "save", "args": { "text": "Need buy milk today", "entities": ["milk", “today”], "tags": ["shopping list", "minor priority"], status: ‘to-do’, “end-date”: “4 April 2023” }}], "response": "Milk added to shoping list" }
+Assume the current date is April 4, 2023.
 
-- User prompt: "Read book about strategies in business". 
-- Result: { "tasks": [{ "task": "save", "args": { "text": "Read book about strategies in business this week", "entities": ["strategies in business"], "tags": ["reading list", "book", "low priority"], status: ‘to-do’, “end-date”: “9 April 2023”  }}], "response": "strategies in business added to reading list" }
+Here are several example cases for your reference: (
+    - User prompt: "Need buy milk today".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
+    
+    - User prompt: "Read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
+    
+    - User prompt: "Show shopping list".
+    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
+    
+    - User prompt: "What I need work on this week?".
+    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
+    
+    - User prompt: "I bought milk and apple".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
+    
+    - User prompt: "I read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
+    
+    - User prompt: "Why sky is blue?".
+    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
+    )
 
-- User prompt: "Show shopping list". 
-- Result: { "tasks": [{ "task": "query", "args": { tags: 'shopping list', status: ‘to-do’  }}, "response": "Current shopping list" }
 
-- User prompt: "What I need work on this week?". 
-- Result: { "tasks": [{ "task": "query", "args": { status: ‘to-do’, “end-date”: {$lte: “10 April 2023”}  }}, "response": "Items in progress for this week" }
-
-- User prompt: “I bought milk and apple”. 
-- Result: { "tasks": [{ “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “milk” }, “update”: {”$set”: { “status”: “done” } } } }, { “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “apple” }, “update”: {”$set”: { “status”: “done” } } } }], "response": "Milk and apple marked as completed in shoping list" }
-)
-
-Ouput response allways in valid JSON notation.
+Ouput must be allways in valid JSON notation.
 ",
   },
   {
     "user": "Need work on taxes this week",
   },
   {
-    "assistant": "{ "tasks": [{ "task": "save", "args": { "text": "Need work on taxes this week", "entities": ["taxes"], "tags": ["work", "high priority"], "status": "to-do", "end-date": "10 April 2023" }}], "response": "Taxes added to work list" }",
+    "assistant": "{"commands":[{"id":"save","args":{"text":"Need work on taxes this week","entities":["taxes"],"tags":["work list","high priority"],"status":"to-do","deadline":"April 9, 2023"}}],"response":"Taxes added to work list"}",
   },
 ]
 `;
@@ -42,36 +75,424 @@ exports[`generateCommands should correctly answer on 'What to read this month?' 
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note manger. You must parse user prompt and output several tasks. Tasks must be written in JSON format { "tasks": [{"task": "task-id", "args": {} }], "response": "Optional response to the user" }.
-A special task-id refers to id of task from following list: [{ "id": "save", "description": "Save the args as document in MongoDB"}, {"id": "query", "description": "Execute MongoDB find query with given arguments in args"}, {”id”: “update”, “description”: “Update existing document in MongoDB using updateOne operation” ]
+You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You can use any of the following commands: [
+  {
+    "command": "save",
+    "description": "Save the args as document in MongoDB"
+  },
+  {
+    "command": "query",
+    "description": "Execute MongoDB find query with given arguments in args"
+  },
+  {
+    "command": "update",
+    "description": "Update existing document in MongoDB using updateOne operation"
+  }
+].
+You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
+Output format: {
+  "commands": [
+    {
+      "id": "command-id",
+      "args": {}
+    }
+  ],
+  "response": "Optional response to the user"
+}
+A special task-id refers to id of task from previus list.
 
-Assume the current date is Tue Apr 04 2023.
+In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
 
-Here are several cases for your reference: (
-- User prompt: "Need buy milk today". 
-- Result: { "tasks": [{ "task": "save", "args": { "text": "Need buy milk today", "entities": ["milk", “today”], "tags": ["shopping list", "minor priority"], status: ‘to-do’, “end-date”: “4 April 2023” }}], "response": "Milk added to shoping list" }
+Assume the current date is April 4, 2023.
 
-- User prompt: "Read book about strategies in business". 
-- Result: { "tasks": [{ "task": "save", "args": { "text": "Read book about strategies in business this week", "entities": ["strategies in business"], "tags": ["reading list", "book", "low priority"], status: ‘to-do’, “end-date”: “9 April 2023”  }}], "response": "strategies in business added to reading list" }
+Here are several example cases for your reference: (
+    - User prompt: "Need buy milk today".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
+    
+    - User prompt: "Read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
+    
+    - User prompt: "Show shopping list".
+    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
+    
+    - User prompt: "What I need work on this week?".
+    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
+    
+    - User prompt: "I bought milk and apple".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
+    
+    - User prompt: "I read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
+    
+    - User prompt: "Why sky is blue?".
+    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
+    )
 
-- User prompt: "Show shopping list". 
-- Result: { "tasks": [{ "task": "query", "args": { tags: 'shopping list', status: ‘to-do’  }}, "response": "Current shopping list" }
 
-- User prompt: "What I need work on this week?". 
-- Result: { "tasks": [{ "task": "query", "args": { status: ‘to-do’, “end-date”: {$lte: “10 April 2023”}  }}, "response": "Items in progress for this week" }
-
-- User prompt: “I bought milk and apple”. 
-- Result: { "tasks": [{ “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “milk” }, “update”: {”$set”: { “status”: “done” } } } }, { “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “apple” }, “update”: {”$set”: { “status”: “done” } } } }], "response": "Milk and apple marked as completed in shoping list" }
-)
-
-Ouput response allways in valid JSON notation.
+Ouput must be allways in valid JSON notation.
 ",
   },
   {
     "user": "What to read this month?",
   },
   {
-    "assistant": "Result: { "tasks": [{ "task": "query", "args": { tags: 'reading list', status: ‘to-do’, “end-date”: {$lte: “30 April 2023”} } }], "response": "Books to read this month" }",
+    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do","deadline":{"$lte":"April 30, 2023"}}}],"response":"Books to read this month"}",
+  },
+]
+`;
+
+exports[`generateCommandsWithRetry should answer query command on "What to read this month?" 1`] = `
+[
+  {
+    "system": "
+You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You can use any of the following commands: [
+  {
+    "command": "save",
+    "description": "Save the args as document in MongoDB"
+  },
+  {
+    "command": "query",
+    "description": "Execute MongoDB find query with given arguments in args"
+  },
+  {
+    "command": "update",
+    "description": "Update existing document in MongoDB using updateOne operation"
+  }
+].
+You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
+Output format: {
+  "commands": [
+    {
+      "id": "command-id",
+      "args": {}
+    }
+  ],
+  "response": "Optional response to the user"
+}
+A special task-id refers to id of task from previus list.
+
+In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
+
+Assume the current date is April 4, 2023.
+
+Here are several example cases for your reference: (
+    - User prompt: "Need buy milk today".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
+    
+    - User prompt: "Read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
+    
+    - User prompt: "Show shopping list".
+    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
+    
+    - User prompt: "What I need work on this week?".
+    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
+    
+    - User prompt: "I bought milk and apple".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
+    
+    - User prompt: "I read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
+    
+    - User prompt: "Why sky is blue?".
+    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
+    )
+
+
+Ouput must be allways in valid JSON notation.
+",
+  },
+  {
+    "user": "What to read this month?",
+  },
+  {
+    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do","deadline":{"$lte":"April 30, 2023"}}}],"response":"Books to read this month"}",
+  },
+]
+`;
+
+exports[`generateCommandsWithRetry should answer save command on 'Need read book "Domain-Driven Design: Tackling Complexity in the Heart of Software" this month 1`] = `
+[
+  {
+    "system": "
+You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You can use any of the following commands: [
+  {
+    "command": "save",
+    "description": "Save the args as document in MongoDB"
+  },
+  {
+    "command": "query",
+    "description": "Execute MongoDB find query with given arguments in args"
+  },
+  {
+    "command": "update",
+    "description": "Update existing document in MongoDB using updateOne operation"
+  }
+].
+You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
+Output format: {
+  "commands": [
+    {
+      "id": "command-id",
+      "args": {}
+    }
+  ],
+  "response": "Optional response to the user"
+}
+A special task-id refers to id of task from previus list.
+
+In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
+
+Assume the current date is April 4, 2023.
+
+Here are several example cases for your reference: (
+    - User prompt: "Need buy milk today".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
+    
+    - User prompt: "Read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
+    
+    - User prompt: "Show shopping list".
+    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
+    
+    - User prompt: "What I need work on this week?".
+    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
+    
+    - User prompt: "I bought milk and apple".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
+    
+    - User prompt: "I read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
+    
+    - User prompt: "Why sky is blue?".
+    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
+    )
+
+
+Ouput must be allways in valid JSON notation.
+",
+  },
+  {
+    "user": "Need read book "Domain-Driven Design: Tackling Complexity in the Heart of Software" this month",
+  },
+  {
+    "assistant": "{"commands":[{"id":"save","args":{"text":"Read book Domain-Driven Design: Tackling Complexity in the Heart of Software this month","entities":["Domain-Driven Design: Tackling Complexity in the Heart of Software"],"tags":["reading list","book","medium priority"],"status":"to-do","deadline":"April 30, 2023"}}],"response":"Domain-Driven Design: Tackling Complexity in the Heart of Software added to reading list"}",
+  },
+]
+`;
+
+exports[`generateCommandsWithRetry should answer save command on 'Need work on taxes this week' 1`] = `
+[
+  {
+    "system": "
+You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You can use any of the following commands: [
+  {
+    "command": "save",
+    "description": "Save the args as document in MongoDB"
+  },
+  {
+    "command": "query",
+    "description": "Execute MongoDB find query with given arguments in args"
+  },
+  {
+    "command": "update",
+    "description": "Update existing document in MongoDB using updateOne operation"
+  }
+].
+You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
+Output format: {
+  "commands": [
+    {
+      "id": "command-id",
+      "args": {}
+    }
+  ],
+  "response": "Optional response to the user"
+}
+A special task-id refers to id of task from previus list.
+
+In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
+
+Assume the current date is April 4, 2023.
+
+Here are several example cases for your reference: (
+    - User prompt: "Need buy milk today".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
+    
+    - User prompt: "Read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
+    
+    - User prompt: "Show shopping list".
+    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
+    
+    - User prompt: "What I need work on this week?".
+    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
+    
+    - User prompt: "I bought milk and apple".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
+    
+    - User prompt: "I read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
+    
+    - User prompt: "Why sky is blue?".
+    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
+    )
+
+
+Ouput must be allways in valid JSON notation.
+",
+  },
+  {
+    "user": "Need work on taxes this week",
+  },
+  {
+    "assistant": "{"commands":[{"id":"save","args":{"text":"Need work on taxes this week","entities":["taxes"],"tags":["work list","high priority"],"status":"to-do","deadline":"April 9, 2023"}}],"response":"Taxes added to work list"}",
+  },
+]
+`;
+
+exports[`generateCommandsWithRetry should answer save command on 'Why the sun looks yellow?' 1`] = `
+[
+  {
+    "system": "
+You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You can use any of the following commands: [
+  {
+    "command": "save",
+    "description": "Save the args as document in MongoDB"
+  },
+  {
+    "command": "query",
+    "description": "Execute MongoDB find query with given arguments in args"
+  },
+  {
+    "command": "update",
+    "description": "Update existing document in MongoDB using updateOne operation"
+  }
+].
+You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
+Output format: {
+  "commands": [
+    {
+      "id": "command-id",
+      "args": {}
+    }
+  ],
+  "response": "Optional response to the user"
+}
+A special task-id refers to id of task from previus list.
+
+In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
+
+Assume the current date is April 4, 2023.
+
+Here are several example cases for your reference: (
+    - User prompt: "Need buy milk today".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
+    
+    - User prompt: "Read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
+    
+    - User prompt: "Show shopping list".
+    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
+    
+    - User prompt: "What I need work on this week?".
+    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
+    
+    - User prompt: "I bought milk and apple".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
+    
+    - User prompt: "I read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
+    
+    - User prompt: "Why sky is blue?".
+    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
+    )
+
+
+Ouput must be allways in valid JSON notation.
+",
+  },
+  {
+    "user": "Why the sun looks yellow?",
+  },
+  {
+    "assistant": "{"commands":[],"response":"The sun appears yellow to us on Earth, but it is actually white. The reason for this is due to the Earth's atmosphere. When sunlight enters the Earth's atmosphere, it is scattered by the gases and particles in the air. This scattering causes the blue light to be scattered more than the other colors, making the sky appear blue. The yellow, orange, and red light are less affected by this scattering, which is why the sun appears yellow or orange during sunrise and sunset. However, when the sun is higher in the sky, it appears white because the blue light has been scattered away."}",
+  },
+]
+`;
+
+exports[`generateCommandsWithRetry should answer update command on "I'm finished with taxes" 1`] = `
+[
+  {
+    "system": "
+You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You can use any of the following commands: [
+  {
+    "command": "save",
+    "description": "Save the args as document in MongoDB"
+  },
+  {
+    "command": "query",
+    "description": "Execute MongoDB find query with given arguments in args"
+  },
+  {
+    "command": "update",
+    "description": "Update existing document in MongoDB using updateOne operation"
+  }
+].
+You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
+Output format: {
+  "commands": [
+    {
+      "id": "command-id",
+      "args": {}
+    }
+  ],
+  "response": "Optional response to the user"
+}
+A special task-id refers to id of task from previus list.
+
+In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
+
+Assume the current date is April 4, 2023.
+
+Here are several example cases for your reference: (
+    - User prompt: "Need buy milk today".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
+    
+    - User prompt: "Read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
+    
+    - User prompt: "Show shopping list".
+    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
+    
+    - User prompt: "What I need work on this week?".
+    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
+    
+    - User prompt: "I bought milk and apple".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
+    
+    - User prompt: "I read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
+    
+    - User prompt: "Why sky is blue?".
+    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
+    )
+
+
+Ouput must be allways in valid JSON notation.
+",
+  },
+  {
+    "user": "I'm finished with taxes",
+  },
+  {
+    "assistant": "{"commands":[{"id":"save","args":{"text":"Finished with taxes","entities":["taxes"],"tags":["personal","high priority"],"status":"done"}}],"response":"Congratulations on finishing your taxes!"}",
   },
 ]
 `;
@@ -80,36 +501,69 @@ exports[`generateCommandsWithRetry should answer valid json on 'What to read thi
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note manger. You must parse user prompt and output several tasks. Tasks must be written in JSON format { "tasks": [{"task": "task-id", "args": {} }], "response": "Optional response to the user" }.
-A special task-id refers to id of task from following list: [{ "id": "save", "description": "Save the args as document in MongoDB"}, {"id": "query", "description": "Execute MongoDB find query with given arguments in args"}, {”id”: “update”, “description”: “Update existing document in MongoDB using updateOne operation” ]
+You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You can use any of the following commands: [
+  {
+    "command": "save",
+    "description": "Save the args as document in MongoDB"
+  },
+  {
+    "command": "query",
+    "description": "Execute MongoDB find query with given arguments in args"
+  },
+  {
+    "command": "update",
+    "description": "Update existing document in MongoDB using updateOne operation"
+  }
+].
+You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
+Output format: {
+  "commands": [
+    {
+      "id": "command-id",
+      "args": {}
+    }
+  ],
+  "response": "Optional response to the user"
+}
+A special task-id refers to id of task from previus list.
 
-Assume the current date is Tue Apr 04 2023.
+In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
 
-Here are several cases for your reference: (
-- User prompt: "Need buy milk today". 
-- Result: { "tasks": [{ "task": "save", "args": { "text": "Need buy milk today", "entities": ["milk", “today”], "tags": ["shopping list", "minor priority"], status: ‘to-do’, “end-date”: “4 April 2023” }}], "response": "Milk added to shoping list" }
+Assume the current date is April 4, 2023.
 
-- User prompt: "Read book about strategies in business". 
-- Result: { "tasks": [{ "task": "save", "args": { "text": "Read book about strategies in business this week", "entities": ["strategies in business"], "tags": ["reading list", "book", "low priority"], status: ‘to-do’, “end-date”: “9 April 2023”  }}], "response": "strategies in business added to reading list" }
+Here are several example cases for your reference: (
+    - User prompt: "Need buy milk today".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
+    
+    - User prompt: "Read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
+    
+    - User prompt: "Show shopping list".
+    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
+    
+    - User prompt: "What I need work on this week?".
+    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
+    
+    - User prompt: "I bought milk and apple".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
+    
+    - User prompt: "I read book about strategies in business".
+    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
+    
+    - User prompt: "Why sky is blue?".
+    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
+    )
 
-- User prompt: "Show shopping list". 
-- Result: { "tasks": [{ "task": "query", "args": { tags: 'shopping list', status: ‘to-do’  }}, "response": "Current shopping list" }
 
-- User prompt: "What I need work on this week?". 
-- Result: { "tasks": [{ "task": "query", "args": { status: ‘to-do’, “end-date”: {$lte: “10 April 2023”}  }}, "response": "Items in progress for this week" }
-
-- User prompt: “I bought milk and apple”. 
-- Result: { "tasks": [{ “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “milk” }, “update”: {”$set”: { “status”: “done” } } } }, { “task”: “update”, args: { filter: {tags: 'shopping list', status: ‘to-do’, entities: “apple” }, “update”: {”$set”: { “status”: “done” } } } }], "response": "Milk and apple marked as completed in shoping list" }
-)
-
-Ouput response allways in valid JSON notation.
+Ouput must be allways in valid JSON notation.
 ",
   },
   {
     "user": "What to read this month?",
   },
   {
-    "assistant": "{"tasks": [{"task": "save", "args": { "text": "Need buy milk today", "entities": ["milk", "today"], "tags": ["shopping list", "minor priority"], "status": "to-do", "end-date": "4 April 2023" }}], "response": "Milk added to shopping list"}",
+    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do","deadline":{"$lte":"April 30, 2023"}}}],"response":"Books to read this month"}",
   },
 ]
 `;

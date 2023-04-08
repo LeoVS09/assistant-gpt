@@ -4,9 +4,11 @@ import { api } from "./api"
 import { validJsonObject } from "./json-validator"
 import { generatePromptToFixJsonError } from "./prompt"
 import { retry } from "./retry"
+import { DateTime } from "luxon"
 
 export interface GenerateCommandsOptions extends SendMessageOptions {
     prompt: String
+    date: DateTime
 }
 
 export interface Commands {
@@ -16,19 +18,20 @@ export interface Commands {
 
 const appologySeparator = '%RESULT%'
 
-export const generateCommandsWithRetry = async ({prompt, ...rest}: GenerateCommandsOptions) => retry<Commands>(
+export const generateCommandsWithRetry = async ({prompt, date, ...rest}: GenerateCommandsOptions) => retry<Commands>(
     async (commands, error) => {
         if(!commands) {
             // No errors, initial call
-            const response = await generateCommands({prompt, ...rest})
+            const response = await generateCommands({prompt, date, ...rest})
             return { response, text: response.text }
         }
 
         // Ouput probably was not valid json
-        const promptToFixError = generatePromptToFixJsonError(appologySeparator, error)
+        const promptToFixError = generatePromptToFixJsonError(appologySeparator, date, error)
 
         const retryRes = await generateCommands({
             ...rest,
+            date,
             prompt: promptToFixError,
             parentMessageId: commands.response.id
         })
