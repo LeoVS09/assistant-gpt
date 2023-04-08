@@ -4,7 +4,11 @@ exports[`generateCommands should correctly answer on 'Need work on taxes this we
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
+You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
+Your knowledge cutoff is 2021-09-01.
+Current date: April 4, 2023.
+
 You can use any of the following commands: [
   {
     "command": "save",
@@ -32,8 +36,6 @@ Output format: {
 A special task-id refers to id of task from previus list.
 
 In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Assume the current date is April 4, 2023.
 
 Here are several example cases for your reference: (
     - User prompt: "Need buy milk today".
@@ -66,7 +68,7 @@ Ouput must be allways in valid JSON notation.
     "user": "Need work on taxes this week",
   },
   {
-    "assistant": "{"commands":[{"id":"save","args":{"text":"Need work on taxes this week","entities":["taxes"],"tags":["work list","high priority"],"status":"to-do","deadline":"April 9, 2023"}}],"response":"Taxes added to work list"}",
+    "assistant": "{"commands":[{"id":"save","args":{"text":"Need work on taxes this week","entities":["taxes"],"tags":["work","major priority"],"status":"to-do","deadline":"April 9, 2023"}}],"response":"Taxes added to work list"}",
   },
 ]
 `;
@@ -75,7 +77,11 @@ exports[`generateCommands should correctly answer on 'What to read this month?' 
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
+You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
+Your knowledge cutoff is 2021-09-01.
+Current date: April 4, 2023.
+
 You can use any of the following commands: [
   {
     "command": "save",
@@ -103,8 +109,6 @@ Output format: {
 A special task-id refers to id of task from previus list.
 
 In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Assume the current date is April 4, 2023.
 
 Here are several example cases for your reference: (
     - User prompt: "Need buy milk today".
@@ -137,7 +141,7 @@ Ouput must be allways in valid JSON notation.
     "user": "What to read this month?",
   },
   {
-    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do","deadline":{"$lte":"April 30, 2023"}}}],"response":"Books to read this month"}",
+    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do"}}],"response":"Books to read this month:"}",
   },
 ]
 `;
@@ -146,7 +150,11 @@ exports[`generateCommandsWithRetry should answer query command on "What to read 
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
+You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
+Your knowledge cutoff is 2021-09-01.
+Current date: April 4, 2023.
+
 You can use any of the following commands: [
   {
     "command": "save",
@@ -174,8 +182,6 @@ Output format: {
 A special task-id refers to id of task from previus list.
 
 In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Assume the current date is April 4, 2023.
 
 Here are several example cases for your reference: (
     - User prompt: "Need buy milk today".
@@ -208,7 +214,7 @@ Ouput must be allways in valid JSON notation.
     "user": "What to read this month?",
   },
   {
-    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do","deadline":{"$lte":"April 30, 2023"}}}],"response":"Books to read this month"}",
+    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do"}}],"response":"Books to read this month"}",
   },
 ]
 `;
@@ -217,7 +223,11 @@ exports[`generateCommandsWithRetry should answer save command on 'Need read book
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
+You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
+Your knowledge cutoff is 2021-09-01.
+Current date: April 4, 2023.
+
 You can use any of the following commands: [
   {
     "command": "save",
@@ -245,8 +255,6 @@ Output format: {
 A special task-id refers to id of task from previus list.
 
 In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Assume the current date is April 4, 2023.
 
 Here are several example cases for your reference: (
     - User prompt: "Need buy milk today".
@@ -288,7 +296,11 @@ exports[`generateCommandsWithRetry should answer save command on 'Need work on t
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
+You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
+Your knowledge cutoff is 2021-09-01.
+Current date: April 4, 2023.
+
 You can use any of the following commands: [
   {
     "command": "save",
@@ -316,8 +328,6 @@ Output format: {
 A special task-id refers to id of task from previus list.
 
 In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Assume the current date is April 4, 2023.
 
 Here are several example cases for your reference: (
     - User prompt: "Need buy milk today".
@@ -350,7 +360,7 @@ Ouput must be allways in valid JSON notation.
     "user": "Need work on taxes this week",
   },
   {
-    "assistant": "{"commands":[{"id":"save","args":{"text":"Need work on taxes this week","entities":["taxes"],"tags":["work list","high priority"],"status":"to-do","deadline":"April 9, 2023"}}],"response":"Taxes added to work list"}",
+    "assistant": "{"commands":[{"id":"save","args":{"text":"Need work on taxes this week","entities":["taxes"],"tags":["work","high priority"],"status":"to-do","deadline":"April 9, 2023"}}],"response":"Taxes added to work list"}",
   },
 ]
 `;
@@ -359,7 +369,11 @@ exports[`generateCommandsWithRetry should answer save command on 'Why the sun lo
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
+You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
+Your knowledge cutoff is 2021-09-01.
+Current date: April 4, 2023.
+
 You can use any of the following commands: [
   {
     "command": "save",
@@ -387,8 +401,6 @@ Output format: {
 A special task-id refers to id of task from previus list.
 
 In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Assume the current date is April 4, 2023.
 
 Here are several example cases for your reference: (
     - User prompt: "Need buy milk today".
@@ -421,7 +433,7 @@ Ouput must be allways in valid JSON notation.
     "user": "Why the sun looks yellow?",
   },
   {
-    "assistant": "{"commands":[],"response":"The sun appears yellow to us on Earth, but it is actually white. The reason for this is due to the Earth's atmosphere. When sunlight enters the Earth's atmosphere, it is scattered by the gases and particles in the air. This scattering causes the blue light to be scattered more than the other colors, making the sky appear blue. The yellow, orange, and red light are less affected by this scattering, which is why the sun appears yellow or orange during sunrise and sunset. However, when the sun is higher in the sky, it appears white because the blue light has been scattered away."}",
+    "assistant": "{"commands":[],"response":"The sun appears yellow to us on Earth because of the way our atmosphere scatters sunlight. When the sun is low on the horizon, its light has to pass through more of the Earth's atmosphere before it reaches our eyes. This causes the shorter, bluer wavelengths of light to be scattered away, leaving mostly the longer, redder wavelengths to reach our eyes. This makes the sun appear more yellow or orange in color."}",
   },
 ]
 `;
@@ -430,7 +442,11 @@ exports[`generateCommandsWithRetry should answer update command on "I'm finished
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
+You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
+Your knowledge cutoff is 2021-09-01.
+Current date: April 4, 2023.
+
 You can use any of the following commands: [
   {
     "command": "save",
@@ -458,8 +474,6 @@ Output format: {
 A special task-id refers to id of task from previus list.
 
 In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Assume the current date is April 4, 2023.
 
 Here are several example cases for your reference: (
     - User prompt: "Need buy milk today".
@@ -501,7 +515,11 @@ exports[`generateCommandsWithRetry should answer valid json on 'What to read thi
 [
   {
     "system": "
-You are personal AI assistant, which primarily working as note and task manger. You can save or update data and execute queries to MongoDB.
+You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
+You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
+Your knowledge cutoff is 2021-09-01.
+Current date: April 4, 2023.
+
 You can use any of the following commands: [
   {
     "command": "save",
@@ -529,8 +547,6 @@ Output format: {
 A special task-id refers to id of task from previus list.
 
 In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Assume the current date is April 4, 2023.
 
 Here are several example cases for your reference: (
     - User prompt: "Need buy milk today".
@@ -563,7 +579,7 @@ Ouput must be allways in valid JSON notation.
     "user": "What to read this month?",
   },
   {
-    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do","deadline":{"$lte":"April 30, 2023"}}}],"response":"Books to read this month"}",
+    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do"}}],"response":"Books to read this month:"}",
   },
 ]
 `;
