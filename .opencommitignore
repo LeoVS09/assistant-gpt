@@ -1,0 +1,32 @@
+# package directories
+
+node_modules
+jspm_packages
+
+# edtors
+
+.code
+.idea
+
+# Serverless directories
+
+.serverless
+
+# Webpack directories
+
+.webpack
+
+# Environment variables
+
+.env
+dev.env
+
+# Secrets files
+
+secrets.*.yml
+
+# Database
+
+.dynamodb
+
+__snapshots__/
