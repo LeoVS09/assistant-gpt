@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`generateCommands should correctly answer on 'Need work on taxes this week' 1`] = `
+exports[`PlaningAgent should answer query command on "What to read this month?" 1`] = `
 [
   {
     "system": "
@@ -22,80 +22,8 @@ You can use any of the following commands: [
     "command": "update",
     "description": "Update existing document in MongoDB using updateOne operation"
   }
-].
-You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
-Output format: {
-  "commands": [
-    {
-      "id": "command-id",
-      "args": {}
-    }
-  ],
-  "response": "Optional response to the user"
-}
-A special task-id refers to id of task from previus list.
-
-In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Here are several example cases for your reference: (
-    - User prompt: "Need buy milk today".
-    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
-    
-    - User prompt: "Read book about strategies in business".
-    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
-    
-    - User prompt: "Show shopping list".
-    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
-    
-    - User prompt: "What I need work on this week?".
-    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
-    
-    - User prompt: "I bought milk and apple".
-    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
-    
-    - User prompt: "I read book about strategies in business".
-    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
-    
-    - User prompt: "Why sky is blue?".
-    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
-    )
-
-
-Ouput must be allways in valid JSON notation.
-",
-  },
-  {
-    "user": "Need work on taxes this week",
-  },
-  {
-    "assistant": "{"commands":[{"id":"save","args":{"text":"Need work on taxes this week","entities":["taxes"],"tags":["work","major priority"],"status":"to-do","deadline":"April 9, 2023"}}],"response":"Taxes added to work list"}",
-  },
 ]
-`;
 
-exports[`generateCommands should correctly answer on 'What to read this month?' 1`] = `
-[
-  {
-    "system": "
-You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
-You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
-Your knowledge cutoff is 2021-09-01.
-Current date: April 4, 2023.
-
-You can use any of the following commands: [
-  {
-    "command": "save",
-    "description": "Save the args as document in MongoDB"
-  },
-  {
-    "command": "query",
-    "description": "Execute MongoDB find query with given arguments in args"
-  },
-  {
-    "command": "update",
-    "description": "Update existing document in MongoDB using updateOne operation"
-  }
-].
 You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
 Output format: {
   "commands": [
@@ -141,12 +69,12 @@ Ouput must be allways in valid JSON notation.
     "user": "What to read this month?",
   },
   {
-    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do"}}],"response":"Books to read this month:"}",
+    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do","deadline":{"$lte":"April 30, 2023"}}}],"response":"Here are the books on your reading list for this month:"}",
   },
 ]
 `;
 
-exports[`generateCommandsWithRetry should answer query command on "What to read this month?" 1`] = `
+exports[`PlaningAgent should answer save command on 'Need read book "Domain-Driven Design: Tackling Complexity in the Heart of Software" this month 1`] = `
 [
   {
     "system": "
@@ -168,80 +96,8 @@ You can use any of the following commands: [
     "command": "update",
     "description": "Update existing document in MongoDB using updateOne operation"
   }
-].
-You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
-Output format: {
-  "commands": [
-    {
-      "id": "command-id",
-      "args": {}
-    }
-  ],
-  "response": "Optional response to the user"
-}
-A special task-id refers to id of task from previus list.
-
-In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Here are several example cases for your reference: (
-    - User prompt: "Need buy milk today".
-    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
-    
-    - User prompt: "Read book about strategies in business".
-    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
-    
-    - User prompt: "Show shopping list".
-    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
-    
-    - User prompt: "What I need work on this week?".
-    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
-    
-    - User prompt: "I bought milk and apple".
-    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
-    
-    - User prompt: "I read book about strategies in business".
-    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
-    
-    - User prompt: "Why sky is blue?".
-    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
-    )
-
-
-Ouput must be allways in valid JSON notation.
-",
-  },
-  {
-    "user": "What to read this month?",
-  },
-  {
-    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do"}}],"response":"Books to read this month"}",
-  },
 ]
-`;
 
-exports[`generateCommandsWithRetry should answer save command on 'Need read book "Domain-Driven Design: Tackling Complexity in the Heart of Software" this month 1`] = `
-[
-  {
-    "system": "
-You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
-You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
-Your knowledge cutoff is 2021-09-01.
-Current date: April 4, 2023.
-
-You can use any of the following commands: [
-  {
-    "command": "save",
-    "description": "Save the args as document in MongoDB"
-  },
-  {
-    "command": "query",
-    "description": "Execute MongoDB find query with given arguments in args"
-  },
-  {
-    "command": "update",
-    "description": "Update existing document in MongoDB using updateOne operation"
-  }
-].
 You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
 Output format: {
   "commands": [
@@ -292,7 +148,7 @@ Ouput must be allways in valid JSON notation.
 ]
 `;
 
-exports[`generateCommandsWithRetry should answer save command on 'Need work on taxes this week' 1`] = `
+exports[`PlaningAgent should answer save command on 'Need work on taxes this week' 1`] = `
 [
   {
     "system": "
@@ -314,7 +170,8 @@ You can use any of the following commands: [
     "command": "update",
     "description": "Update existing document in MongoDB using updateOne operation"
   }
-].
+]
+
 You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
 Output format: {
   "commands": [
@@ -360,12 +217,12 @@ Ouput must be allways in valid JSON notation.
     "user": "Need work on taxes this week",
   },
   {
-    "assistant": "{"commands":[{"id":"save","args":{"text":"Need work on taxes this week","entities":["taxes"],"tags":["work","high priority"],"status":"to-do","deadline":"April 9, 2023"}}],"response":"Taxes added to work list"}",
+    "assistant": "{"commands":[{"id":"save","args":{"text":"Work on taxes this week","entities":["taxes"],"tags":["work","high priority"],"status":"to-do","deadline":"April 9, 2023"}}],"response":"Taxes added to work list"}",
   },
 ]
 `;
 
-exports[`generateCommandsWithRetry should answer save command on 'Why the sun looks yellow?' 1`] = `
+exports[`PlaningAgent should answer save command on 'Why the sun looks yellow?' 1`] = `
 [
   {
     "system": "
@@ -387,7 +244,8 @@ You can use any of the following commands: [
     "command": "update",
     "description": "Update existing document in MongoDB using updateOne operation"
   }
-].
+]
+
 You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
 Output format: {
   "commands": [
@@ -433,12 +291,12 @@ Ouput must be allways in valid JSON notation.
     "user": "Why the sun looks yellow?",
   },
   {
-    "assistant": "{"commands":[],"response":"The sun appears yellow to us on Earth because of the way our atmosphere scatters sunlight. When the sun is low on the horizon, its light has to pass through more of the Earth's atmosphere before it reaches our eyes. This causes the shorter, bluer wavelengths of light to be scattered away, leaving mostly the longer, redder wavelengths to reach our eyes. This makes the sun appear more yellow or orange in color."}",
+    "assistant": "{"commands":[],"response":"The sun appears yellow to us because of the way Earth's atmosphere scatters sunlight. When the sun is low on the horizon, its light has to pass through more of the atmosphere to reach us. This causes the shorter, bluer wavelengths of light to scatter more, leaving the longer, redder wavelengths to dominate our perception. As a result, the sun appears more yellow, orange, or red when it is near the horizon. At other times of day, when the sun is higher in the sky, its light has to travel through less of the atmosphere, so it appears whiter or even slightly blue."}",
   },
 ]
 `;
 
-exports[`generateCommandsWithRetry should answer update command on "I'm finished with taxes" 1`] = `
+exports[`PlaningAgent should answer update command on "I'm finished with taxes" 1`] = `
 [
   {
     "system": "
@@ -460,7 +318,8 @@ You can use any of the following commands: [
     "command": "update",
     "description": "Update existing document in MongoDB using updateOne operation"
   }
-].
+]
+
 You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
 Output format: {
   "commands": [
@@ -506,80 +365,7 @@ Ouput must be allways in valid JSON notation.
     "user": "I'm finished with taxes",
   },
   {
-    "assistant": "{"commands":[{"id":"save","args":{"text":"Finished with taxes","entities":["taxes"],"tags":["personal","high priority"],"status":"done"}}],"response":"Congratulations on finishing your taxes!"}",
-  },
-]
-`;
-
-exports[`generateCommandsWithRetry should answer valid json on 'What to read this month?' 1`] = `
-[
-  {
-    "system": "
-You are personal AI assistant, which primarily working on note and task managment. You can save/update data and execute queries to MongoDB. Use MongoDB as your long term memory storage, store all data related to user.
-You can answer user questions, but must be as concisely as possible. Use general knowledge when possible, but to answer user related questions you must use data from MongoDB.
-Your knowledge cutoff is 2021-09-01.
-Current date: April 4, 2023.
-
-You can use any of the following commands: [
-  {
-    "command": "save",
-    "description": "Save the args as document in MongoDB"
-  },
-  {
-    "command": "query",
-    "description": "Execute MongoDB find query with given arguments in args"
-  },
-  {
-    "command": "update",
-    "description": "Update existing document in MongoDB using updateOne operation"
-  }
-].
-You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
-Output format: {
-  "commands": [
-    {
-      "id": "command-id",
-      "args": {}
-    }
-  ],
-  "response": "Optional response to the user"
-}
-A special task-id refers to id of task from previus list.
-
-In case of user asking general question, you must output answer to user in "response" field, with empty commands list.
-
-Here are several example cases for your reference: (
-    - User prompt: "Need buy milk today".
-    - Assistent output: {"commands":[{"id":"save","args":{"text":"Need buy milk today","entities":["milk","today"],"tags":["shopping list","minor priority"],"status":"to-do","deadline":"April 4, 2023"}}],"response":"Milk added to shoping list"}
-    
-    - User prompt: "Read book about strategies in business".
-    - Assistent output: {"commands":[{"id":"save","args":{"text":"Read book about strategies in business this week","entities":["strategies in business"],"tags":["reading list","book","low priority"],"status":"to-do"}}],"response":"strategies in business added to reading list"}
-    
-    - User prompt: "Show shopping list".
-    - Assistent output: {"commands":[{"id":"query","args":{"tags":"shopping list","status":"to-do"}}],"response":"Current shopping list"}
-    
-    - User prompt: "What I need work on this week?".
-    - Assistent output: {"commands":[{"id":"query","args":{"status":"to-do","deadline":{"$lte":"April 9, 2023"}}}],"response":"Items in progress for this week"}
-    
-    - User prompt: "I bought milk and apple".
-    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"milk"},"update":{"$set":{"status":"done"}}}},{"id":"update","args":{"filter":{"tags":"shopping list","status":"to-do","entities":"apple"},"update":{"$set":{"status":"done"}}}}],"response":"Milk and apple marked as completed in shoping list"}
-    
-    - User prompt: "I read book about strategies in business".
-    - Assistent output: {"commands":[{"id":"update","args":{"filter":{"tags":"reading list","status":"to-do","entities":"strategies in business"},"update":{"$set":{"status":"done"}}}}],"response":"strategies in business marked as completed in reading list"}
-    
-    - User prompt: "Why sky is blue?".
-    - Assistent output: {"commands":[],"response":"\\nThe sky appears blue due to a phenomenon called Rayleigh scattering. This occurs when sunlight interacts with molecules and tiny particles in Earth's atmosphere. The short wavelengths of light, such as blue and violet, are scattered more efficiently by these particles than the longer wavelengths, such as red and yellow.\\n\\nAlthough both blue and violet light are scattered more, our eyes are more sensitive to blue light. Moreover, the shorter-wavelength violet light is absorbed by the ozone layer high up in the atmosphere. As a result, when we look at the sky, we perceive it as blue.\\n\\nIt's important to note that the sky's color can change under different conditions. For example, during sunrise and sunset, the sky may appear red or orange due to the longer path sunlight travels through the atmosphere. This causes increased scattering of shorter wavelengths, allowing the longer wavelengths to dominate our perception.\\n"}
-    )
-
-
-Ouput must be allways in valid JSON notation.
-",
-  },
-  {
-    "user": "What to read this month?",
-  },
-  {
-    "assistant": "{"commands":[{"id":"query","args":{"tags":"reading list","status":"to-do"}}],"response":"Books to read this month:"}",
+    "assistant": "{"commands":[{"id":"update","args":{"filter":{"tags":"work","status":"to-do","entities":"taxes"},"update":{"$set":{"status":"done"}}}}],"response":"Taxes marked as completed in work list"}",
   },
 ]
 `;

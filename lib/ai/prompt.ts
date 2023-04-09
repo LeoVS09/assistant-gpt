@@ -1,17 +1,8 @@
 import {DateTime} from 'luxon';
+import { AssistantOutput } from './assistant-models';
 
-export interface Output {
-    response: string;
-    /** Can be empty */
-    commands?: Array<AbstractCommand>;
-}
 
-export interface AbstractCommand<Args = object> {
-    id: string;
-    args: Args;
-}
-
-const responseFormat: Output = { commands: [{ id: "command-id", args: {} }], response: "Optional response to the user" }
+const responseFormat: AssistantOutput = { commands: [{ id: "command-id", args: {} }], response: "Optional response to the user" }
 
 const commandsList: Array<{ command: string, description: string }> = [
     { command: "save", "description": "Save the args as document in MongoDB" },
@@ -19,7 +10,7 @@ const commandsList: Array<{ command: string, description: string }> = [
     { command: "update", "description": "Update existing document in MongoDB using updateOne operation" }
 ]
 
-const exampleCases = (date: DateTime): Array<{ prompt: string, result: Output }> => [
+const exampleCases = (date: DateTime): Array<{ prompt: string, result: AssistantOutput }> => [
     {
         prompt: "Need buy milk today",
         result: {
@@ -120,7 +111,8 @@ You can answer user questions, but must be as concisely as possible. Use general
 Your knowledge cutoff is 2021-09-01.
 Current date: ${date.toLocaleString(DateTime.DATE_FULL)}.
 
-You can use any of the following commands: ${JSON.stringify(commandsList, null, 2)}.
+You can use any of the following commands: ${JSON.stringify(commandsList, null, 2)}
+
 You must parse user prompt and output list of commands together with your response to user. Whole output must be written in JSON. 
 Output format: ${JSON.stringify(responseFormat, null, 2)}
 A special task-id refers to id of task from previus list.
@@ -134,7 +126,7 @@ Ouput must be allways in valid JSON notation.
 `
 
 
-export const errorExample = (date: DateTime): Output => ({
+export const errorExample = (date: DateTime): AssistantOutput => ({
     commands: [{
         id: "save", args: { 
             "text": "Need buy milk today", "entities": ["milk", "today"], "tags": ["shopping list", "minor priority"], status: "to-do", 
@@ -156,7 +148,7 @@ I apologize for the mistake. Here is the corrected JSON response:
 ${separator} ${JSON.stringify(errorExample(date), null, 2)}
 `
 
-const errorToString = (error?: any) => {
+export const errorToString = (error?: any) => {
     if (error) {
         return error.toString() || error.message || JSON.stringify(error)
     }

@@ -19,7 +19,7 @@ export function validateJson(text: string) {
  * @param {*} text
  * @returns {boolean}
  */
-export function validJsonObject(text: string) {
+export function validateJsonObject(text: string) {
     if (typeof text !== 'string') {
         throw new Error('Text is not a string')
     }

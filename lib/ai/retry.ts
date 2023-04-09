@@ -1,25 +1,26 @@
-export async function retry<Response>(func: (res?: Response, error?: any) => Promise<Response>, validate: (arg: Response) => void, retryCount = 3) {
-    let res = await func()
-    const checkIsValid = genIsValid(validate)
+export async function retry<Response>(
+    call: (res?: Response) => Promise<Response>,
+    onError: (error?: any) => Promise<Response>, 
+    retryCount = 3
+) {
+    try {
+        return await call()
+    } catch (error) {
+        let finalError = error
 
+        let retry = 0
+        while (retry < retryCount) {
+            try {
+                return await onError(finalError)
+            } catch (retryError) {
+                finalError = retryError
+            }
+            
+            retry++
+        }
 
-    let finalError
-
-    let retry = 0
-    while (retry < retryCount) {
-        const {isValid, error} = checkIsValid(res)
-        if (isValid) 
-            return res
-        
-        finalError = error
-
-        res = await func(res, error)
-        retry++
+        throw finalError
     }
-
-
-
-    throw finalError
 }
 
 export const genIsValid = <Response>(validate: (arg: Response) => void) => (response: Response) => {
