@@ -7,7 +7,8 @@
   "scripts": {
     "deploy": "make deploy",
     "test:ai": "node --experimental-specifier-resolution=node --loader ts-node/esm ./lib/ai/index.ts --project tsconfig.json",
-    "test": "node --experimental-vm-modules --experimental-specifier-resolution=node ./node_modules/.bin/jest --updateSnapshot --watchAll"
+    "test": "node --experimental-vm-modules --experimental-specifier-resolution=node ./node_modules/.bin/jest --updateSnapshot --watchAll",
+    "sls": "node --experimental-vm-modules --experimental-specifier-resolution=node /usr/local/bin/serverless"
   },
   "repository": {
     "type": "git",

@@ -13,6 +13,7 @@ cat >> .env <<CONFIG
 AWS_ACCESS_KEY_ID=You aws access key, you can get it there https://serverless.com/framework/docs/providers/aws/guide/credentials/
 AWS_SECRET_ACCESS_KEY=You aws secret, you can get it there https://serverless.com/framework/docs/providers/aws/guide/credentials/
 SERVERLESS_ACCESS_KEY=Your Serverless access key, you can setup it there: https://serverless.com/framework/docs/dashboard/cicd/running-in-your-own-cicd#create-an-access-key-in-the-serverless-framework-dashboard
+TELEGRAM_TOKEN=Your telegram bot token, you can get it there: https://core.telegram.org/bots#6-botfather
 CONFIG
 
 echo "Configuration written to .env"
@@ -34,7 +35,6 @@ echo "Generate dev stage secrets 'secrets.dev.yml' file..."
 
 cat >> secrets.dev.yml <<CONFIG
 SECRET_SERVICE_KEY: SOME_SECRET_KEY
-TELEGRAM_TOKEN: TELEGRAM_BOT_TOKEN
 CONFIG
 
 chmod +rw secrets.dev.yml

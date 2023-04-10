@@ -1,16 +1,20 @@
-import Telegraf, { ContextMessageUpdate }  from 'telegraf'
-import Extra from  'telegraf/extra'
+import Telegraf, { ContextMessageUpdate } from 'telegraf'
+import Extra from 'telegraf/extra'
 import Markup from 'telegraf/markup'
 import db from './lib/db'
 
 const token = process.env.TELEGRAM_TOKEN
+if (!token) {
+  throw new Error('TELEGRAM_TOKEN env variable is not set')
+}
+
 const bot = new Telegraf(token);
 
 const markup = Extra.markdown()
 const keyboard = Markup.keyboard([
   ['List'],
   ['Help']
-])    
+])
   .oneTime()
   .resize();
 
@@ -29,8 +33,8 @@ ${helpMessage}
 `
 
 const replyWithHello = async (ctx: ContextMessageUpdate) => {
-    await ctx.reply(helloMessage, markup)
-    await ctx.reply('Menu', Extra.markup(keyboard))
+  await ctx.reply(helloMessage, markup)
+  await ctx.reply('Menu', Extra.markup(keyboard))
 }
 
 bot.start(replyWithHello)
@@ -41,7 +45,7 @@ bot.hears('ping', ctx => ctx.reply('pong'))
 bot.hears('hi', replyWithHello)
 bot.hears('Hi', replyWithHello)
 
-bot.hears(/Add (.+)/, async ({match, reply, chat}) => {
+bot.hears(/Add (.+)/, async ({ match, reply, chat }) => {
   const text = match[1]
 
   await db.create(chat.id, text)
@@ -49,25 +53,25 @@ bot.hears(/Add (.+)/, async ({match, reply, chat}) => {
   await reply(`${text} *successfully added!*`, markup)
 })
 
-bot.hears('List', async ({reply, chat}) => {
+bot.hears('List', async ({ reply, chat }) => {
   await reply('*TODO*:', markup)
 
-    const todoReplies: Array<Promise<any>> = [];
+  const todoReplies: Array<Promise<any>> = [];
 
   for await (const todo of db.list()) {
-    if(todo.chatId === chat.id)
+    if (todo.chatId === chat.id)
       todoReplies.push(reply(todo.text))
   }
 
   await Promise.all(todoReplies)
 })
 
-bot.hears(/Done (.+)/, async ({match, reply, chat}) => {
+bot.hears(/Done (.+)/, async ({ match, reply, chat }) => {
   const text = match[1]
 
   for await (const todo of db.list()) {
 
-    if(todo.chatId !== chat.id || todo.text !== text) 
+    if (todo.chatId !== chat.id || todo.text !== text)
       continue
 
     await db.delete(todo.id)
@@ -81,8 +85,8 @@ bot.hears(/Done (.+)/, async ({match, reply, chat}) => {
 })
 
 const replyWithHelp = async (ctx: ContextMessageUpdate) => {
-    await ctx.reply(helpMessage, markup)
-    await ctx.reply('Menu', Extra.markup(keyboard))
+  await ctx.reply(helpMessage, markup)
+  await ctx.reply('Menu', Extra.markup(keyboard))
 }
 
 bot.help(replyWithHelp)

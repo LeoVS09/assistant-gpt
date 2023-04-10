@@ -1,13 +1,12 @@
 service:
-  name: serverless-tg-bot-with-db-bootstrap
+  name: telegram-bot
 # app and org for use with dashboard.serverless.com
-app: example
+app: assistant-gpt
 org: leovs09
 
 plugins:
   - serverless-webpack
   - serverless-secrets-plugin
-  - serverless-mocha-plugin
   # dynamodb-local must be loaded before offline for start automatically
   - serverless-dynamodb-local
   - serverless-offline
@@ -22,7 +21,7 @@ provider:
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
     SECRET_SERVICE_KEY: ${self:custom.secrets.SECRET_SERVICE_KEY}
-    TELEGRAM_TOKEN: ${self:custom.secrets.TELEGRAM_TOKEN}
+    TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
   
   iamRoleStatements:
@@ -40,7 +39,7 @@ custom:
   secrets: ${file(./secrets.${opt:stage, self:provider.stage}.yml)}
   
   webpack:
-    webpackConfig: ./webpack.config.js
+    webpackConfig: ./webpack.config.cjs
     includeModules:
       forceExclude:
         - aws-sdk
@@ -82,7 +81,7 @@ functions:
           path: telegram
     enviroment:
       STAGE: ${self:provider.stage}
-      SECRET_FUNCTION_TOKEN: ${env:SECRET_FUNCTION_TOKEN}
+      TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
   
   create:
     handler: todos/create.create
